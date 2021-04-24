@@ -3,15 +3,16 @@ Models.
 """
 from typing import List, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
-class RequestSentense(BaseModel):
+class RequestSentence(BaseModel):
     text: str
 
 
 class ResponsePrediction(BaseModel):
-    predicted_class: str
+    positive_percent: float
+    negative_percent: float
 
 
 class Message(BaseModel):

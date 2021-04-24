@@ -4,7 +4,8 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
-from .modules.data_models import Message, RequestSentense, ResponsePrediction
+from .modules.data_models import Message, RequestSentence, ResponsePrediction
+from .modules.ml_models import ModelInference
 
 
 logging.basicConfig(
@@ -19,6 +20,7 @@ global_responses = {
 }
 
 app = FastAPI()
+app.model_inference = ModelInference()
 
 
 @app.post(
@@ -26,18 +28,23 @@ app = FastAPI()
     response_model=ResponsePrediction, 
     responses={**global_responses}
 )
-def predict(request_sentense: RequestSentense):
+def predict(request_sentense: RequestSentence):
     try:
-        logger.info(f"RequestSentense: {request_sentense}")
-        ...
+        logger.info(f"RequestSentence: {request_sentense}")
+        negative_percent, positive_percent = app.model_inference(
+            request_sentense.text
+        )
+        response_prediction = ResponsePrediction(
+            positive_percent=positive_percent,
+            negative_percent=negative_percent,
+        )
+        logger.info(f"ResponsePrediction: {response_prediction}")
+        return response_prediction
     
     except Exception as exception:
         logger.exception(str(exception))
         return JSONResponse(
             status_code=500, content={"message": "Internal Server Error"}
         )
+    
         
-    else:
-        response_prediction = ResponsePrediction(predicted_class="positive")
-        logger.info(f"ResponsePrediction: {response_prediction}")
-        return response_prediction
