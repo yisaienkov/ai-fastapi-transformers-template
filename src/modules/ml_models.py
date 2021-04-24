@@ -16,7 +16,7 @@ class ModelInference():
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     def __call__(self, input_sentence: str) -> Tuple[float, float]:
-        """Create prediction for one text
+        """Create prediction for one text.
 
         Parameters
         ----------
